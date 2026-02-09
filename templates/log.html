@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Quick Log{% endblock %}
+
+{% block content %}
+<div class="log-page">
+    <h1 class="page-title">Quick Log Entry</h1>
+    <p class="page-subtitle">Track your glucose, carbs, meal, and mood in seconds</p>
+
+    <form method="POST" class="log-form" id="logForm">
+        <!-- Blood Glucose Input -->
+        <div class="form-group">
+            <label for="glucose_level" class="form-label">
+                Blood Glucose (mmol/L) <span class="required">*</span>
+            </label>
+            <input
+                type="number"
+                id="glucose_level"
+                name="glucose_level"
+                class="form-input"
+                placeholder="e.g., 6.5"
+                min="2.0"
+                max="30.0"
+                step="0.1"
+                required
+            >
+            <small class="form-help">Normal range: 3.9-10.0 mmol/L</small>
+        </div>
+
+        <!-- US-22: Carbs Input -->
+        <div class="form-group">
+            <label for="carbs_grams" class="form-label">
+                🥖 Carbohydrates (grams) <span class="optional-tag">Optional</span>
+            </label>
+            <input
+                type="number"
+                id="carbs_grams"
+                name="carbs_grams"
+                class="form-input"
+                placeholder="e.g., 45"
+                min="0"
+                max="500"
+                step="1"
+            >
+            <small class="form-help">
+                Track carbs to better understand glucose patterns.
+                <span class="carb-examples">Examples: Slice of bread ~15g, Apple ~25g, Pasta bowl ~60g</span>
+            </small>
+        </div>
+
+        <!-- Meal Type Selection -->
+        <div class="form-group">
+            <label class="form-label">
+                Meal Type <span class="required">*</span>
+            </label>
+            <div class="button-grid">
+                <button type="button" class="btn-option" data-value="breakfast" onclick="selectOption(this, 'meal_type')">
+                    🌅 Breakfast
+                </button>
+                <button type="button" class="btn-option" data-value="lunch" onclick="selectOption(this, 'meal_type')">
+                    ☀️ Lunch
+                </button>
+                <button type="button" class="btn-option" data-value="dinner" onclick="selectOption(this, 'meal_type')">
+                    🌙 Dinner
+                </button>
+                <button type="button" class="btn-option" data-value="snack" onclick="selectOption(this, 'meal_type')">
+                    🍎 Snack
+                </button>
+                <button type="button" class="btn-option" data-value="none" onclick="selectOption(this, 'meal_type')">
+                    ⏭️ No Meal
+                </button>
+            </div>
+            <input type="hidden" id="meal_type" name="meal_type" required>
+        </div>
+
+        <!-- Mood Selection -->
+        <div class="form-group">
+            <label class="form-label">
+                How are you feeling? <span class="required">*</span>
+            </label>
+            <div class="button-grid">
+                <button type="button" class="btn-option" data-value="happy" onclick="selectOption(this, 'mood')">
+                    😊 Happy
+                </button>
+                <button type="button" class="btn-option" data-value="calm" onclick="selectOption(this, 'mood')">
+                    😌 Calm
+                </button>
+                <button type="button" class="btn-option" data-value="stressed" onclick="selectOption(this, 'mood')">
+                    😰 Stressed
+                </button>
+                <button type="button" class="btn-option" data-value="tired" onclick="selectOption(this, 'mood')">
+                    😴 Tired
+                </button>
+                <button type="button" class="btn-option" data-value="frustrated" onclick="selectOption(this, 'mood')">
+                    😤 Frustrated
+                </button>
+            </div>
+            <input type="hidden" id="mood" name="mood" required>
+        </div>
+
+        <!-- Optional Notes -->
+        <div class="form-group">
+            <label for="notes" class="form-label">
+                Notes <span class="optional-tag">Optional</span>
+            </label>
+            <textarea
+                id="notes"
+                name="notes"
+                class="form-textarea"
+                placeholder="Any thoughts or observations?"
+                rows="3"
+            ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-large">
+                ✅ Save Entry
+            </button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function selectOption(button, inputId) {
+        const buttons = button.parentElement.querySelectorAll('.btn-option');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        document.getElementById(inputId).value = button.getAttribute('data-value');
+    }
+
+    document.getElementById('logForm').addEventListener('submit', function(e) {
+        const glucoseLevel = document.getElementById('glucose_level').value;
+        const carbsGrams = document.getElementById('carbs_grams').value;
+        const mealType = document.getElementById('meal_type').value;
+        const mood = document.getElementById('mood').value;
+
+        if (!glucoseLevel) {
+            e.preventDefault();
+            alert('Please enter your blood glucose level.');
+            return false;
+        }
+
+        if (!mealType) {
+            e.preventDefault();
+            alert('Please select a meal type.');
+            return false;
+        }
+
+        if (!mood) {
+            e.preventDefault();
+            alert('Please select how you\'re feeling.');
+            return false;
+        }
+
+        const glucose = parseFloat(glucoseLevel);
+        if (glucose < 2.0 || glucose > 30.0) {
+            e.preventDefault();
+            alert('Glucose level must be between 2.0 and 30.0 mmol/L.');
+            return false;
+        }
+
+        // US-22: Validate carbs
+        if (carbsGrams) {
+            const carbs = parseInt(carbsGrams);
+            if (isNaN(carbs) || carbs < 0 || carbs > 500) {
+                e.preventDefault();
+                alert('Carbs must be between 0 and 500 grams.');
+                document.getElementById('carbs_grams').focus();
+                return false;
+            }
+        }
+
+        return true;
+    });
+</script>
+
+<style>
+.optional-tag {
+    color: var(--color-text-muted);
+    font-weight: normal;
+    font-size: 0.875rem;
+    font-style: italic;
+}
+
+.carb-examples {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+#carbs_grams:focus {
+    border-color: #f0ad4e;
+    box-shadow: 0 0 0 3px rgba(240, 173, 78, 0.1);
+}
+</style>
+{% endblock %}

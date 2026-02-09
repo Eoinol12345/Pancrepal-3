@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}PancrePal{% endblock %} - Your Diabetes Companion</title>
+
+    <!-- ========================================
+         PWA META TAGS
+         ======================================== -->
+    <meta name="description" content="PancrePal - Your supportive companion for Type 1 diabetes tracking">
+    <meta name="theme-color" content="#667eea">
+    <meta name="color-scheme" content="light">
+
+    <!-- iOS Specific Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PancrePal">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Custom Styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <h1 class="logo">🥞 PancrePal</h1>
+
+                {% if current_user.is_authenticated %}
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('index') }}" class="nav-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('log_entry') }}" class="nav-link">Quick Log</a></li>
+                    <li><a href="{{ url_for('avatar') }}" class="nav-link">Avatar</a></li>
+                    <li><a href="{{ url_for('settings') }}" class="nav-link">Settings</a></li>
+                    <li><a href="{{ url_for('ethics') }}" class="nav-link">Data Ethics</a></li>
+                </ul>
+
+                <div class="nav-user">
+                    <span class="user-email">{{ current_user.email }}</span>
+                    <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+                </div>
+                {% else %}
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('ethics') }}" class="nav-link">About</a></li>
+                    <li><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+                    <li><a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a></li>
+                </ul>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            <div class="container">
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">
+                PancrePal - A supportive companion, not a replacement for medical advice.
+                <a href="{{ url_for('ethics') }}" class="footer-link">Learn about our data practices</a>
+            </p>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+
+    <!-- ========================================
+         PWA SERVICE WORKER - DISABLED FOR DEVELOPMENT
+
+         ⚠️ IMPORTANT: Service Worker is DISABLED during localhost development
+         to prevent caching conflicts with Flask authentication and sessions.
+
+         ✅ RE-ENABLE THIS before deploying to production!
+
+         Instructions to re-enable:
+         1. Find the comment block below that says "UNCOMMENT FOR PRODUCTION"
+         2. Remove the /* at the start and */ at the end
+         3. Deploy to production with HTTPS
+         4. Service worker will work perfectly!
+         ======================================== -->
+    <script>
+        console.log('🔧 PWA Service Worker: DISABLED for development');
+        console.log('✅ Re-enable before deploying to production!');
+
+         ========== UNCOMMENT FOR PRODUCTION ==========
+
+        let deferredPrompt;
+        let swRegistration = null;
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(function(registration) {
+                        console.log('✓ Service Worker registered');
+                        console.log('Scope:', registration.scope);
+                        swRegistration = registration;
+
+                        // Check for updates every hour
+                        setInterval(() => {
+                            registration.update();
+                        }, 3600000);
+                    })
+                    .catch(function(error) {
+                        console.log('✗ Service Worker registration failed:', error);
+                    });
+            });
+        } else {
+            console.log('Service Worker not supported');
+        }
+
+        // PWA Install Prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('💡 PancrePal is ready to install!');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('✓ PancrePal has been installed!');
+            deferredPrompt = null;
+        });
+
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            console.log('✓ Running as installed PWA');
+            document.body.classList.add('is-pwa');
+        }
+
+        window.addEventListener('online', () => {
+            console.log('✓ Back online');
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('✗ Offline mode');
+        });
+
+        ========== END PRODUCTION CODE ==========
+    </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Customize your PancrePal experience</p>
+
+    <form method="POST" class="settings-form">
+        <!-- Reminder Settings -->
+        <section class="settings-section">
+            <h2 class="settings-heading">
+                <span class="settings-icon">🔔</span>
+                Gentle Reminders
+            </h2>
+            <p class="settings-description">
+                Get a friendly nudge to log your glucose. We'll never spam or pressure you!
+            </p>
+
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input 
+                        type="checkbox" 
+                        name="reminders_enabled" 
+                        {% if progress.reminders_enabled %}checked{% endif %}
+                    >
+                    <span>Enable reminders</span>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="reminder_time" class="form-label">
+                    Preferred reminder time
+                </label>
+                <input 
+                    type="time" 
+                    id="reminder_time" 
+                    name="reminder_time" 
+                    class="form-input"
+                    value="{{ progress.reminder_time.strftime('%H:%M') if progress.reminder_time else '20:00' }}"
+                >
+                <small class="form-help">
+                    We'll send you a gentle reminder at this time each day.
+                </small>
+            </div>
+
+            <div class="info-box">
+                <strong>Note:</strong> Reminder delivery requires browser notifications to be enabled. 
+                In this prototype, reminders are saved as preferences but not actively sent.
+            </div>
+        </section>
+
+        <!-- Privacy Settings -->
+        <section class="settings-section">
+            <h2 class="settings-heading">
+                <span class="settings-icon">🔒</span>
+                Privacy & Data
+            </h2>
+            <p class="settings-description">
+                Your data is stored locally on this device only. 
+                <a href="{{ url_for('ethics') }}" class="link-primary">Learn more about our privacy practices.</a>
+            </p>
+
+            <div class="info-box">
+                <p><strong>Local Storage:</strong> All your glucose logs, moods, and notes stay on your device.</p>
+                <p><strong>No Account Required:</strong> You can use PancrePal completely anonymously.</p>
+                <p><strong>Data Export:</strong> Coming soon - export your data as CSV for use with other tools.</p>
+            </div>
+        </section>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                Save Settings
+            </button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+/* Settings page specific styles */
+.settings-page {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.settings-form {
+    background-color: var(--color-surface);
+    padding: var(--space-2xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.settings-section {
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-2xl);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.settings-section:last-of-type {
+    border-bottom: none;
+}
+
+.settings-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.settings-icon {
+    font-size: 1.75rem;
+}
+
+.settings-description {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-lg);
+    line-height: 1.6;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    padding: var(--space-md);
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.checkbox-label:hover {
+    background-color: rgba(74, 144, 226, 0.05);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.checkbox-label span {
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.info-box {
+    background-color: rgba(91, 192, 222, 0.1);
+    border-left: 4px solid var(--color-info);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    margin-top: var(--space-lg);
+}
+
+.info-box p {
+    margin: var(--space-xs) 0;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}
+
+.info-box strong {
+    color: var(--color-text-primary);
+}
+</style>
+{% endblock %}

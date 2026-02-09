@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Analytics{% endblock %}
+
+{% block content %}
+<div class="analytics-page">
+    <h1 class="page-title">Advanced Analytics</h1>
+    <p class="page-subtitle">Deep insights into your glucose management</p>
+
+    <!-- Metrics Grid -->
+    <section class="analytics-metrics">
+        <h2 class="section-title">Key Performance Indicators</h2>
+        
+        <div class="analytics-grid">
+            {% for key, explanation in explanations.items() %}
+            {% if key == 'time_in_range' %}
+            <div class="analytics-card analytics-primary">
+                <div class="analytics-header">
+                    <span class="analytics-icon">{{ explanation.icon }}</span>
+                    <h3>{{ explanation.title }}</h3>
+                </div>
+                <div class="analytics-value">{{ metrics.time_in_range_pct }}%</div>
+                <div class="analytics-target">Target: {{ explanation.target }}</div>
+                <div class="analytics-description">{{ explanation.description }}</div>
+            </div>
+            {% elif key == 'avg_glucose' %}
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <span class="analytics-icon">{{ explanation.icon }}</span>
+                    <h3>{{ explanation.title }}</h3>
+                </div>
+                <div class="analytics-value">{{ metrics.mean_glucose }} mmol/L</div>
+                <div class="analytics-target">Target: {{ explanation.target }}</div>
+                <div class="analytics-description">{{ explanation.description }}</div>
+            </div>
+            {% elif key == 'coefficient_of_variation' %}
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <span class="analytics-icon">{{ explanation.icon }}</span>
+                    <h3>{{ explanation.title }}</h3>
+                </div>
+                <div class="analytics-value">{{ metrics.coefficient_of_variation }}%</div>
+                <div class="analytics-target">Target: {{ explanation.target }}</div>
+                <div class="analytics-description">{{ explanation.description }}</div>
+            </div>
+            {% elif key == 'hypo_events' %}
+            <div class="analytics-card analytics-warning">
+                <div class="analytics-header">
+                    <span class="analytics-icon">{{ explanation.icon }}</span>
+                    <h3>{{ explanation.title }}</h3>
+                </div>
+                <div class="analytics-value">{{ metrics.hypo_events }}</div>
+                <div class="analytics-target">{{ metrics.time_below_range_pct }}% of readings</div>
+                <div class="analytics-description">{{ explanation.description }}</div>
+            </div>
+            {% elif key == 'hyper_events' %}
+            <div class="analytics-card analytics-info">
+                <div class="analytics-header">
+                    <span class="analytics-icon">{{ explanation.icon }}</span>
+                    <h3>{{ explanation.title }}</h3>
+                </div>
+                <div class="analytics-value">{{ metrics.hyper_events }}</div>
+                <div class="analytics-target">{{ metrics.time_above_range_pct }}% of readings</div>
+                <div class="analytics-description">{{ explanation.description }}</div>
+            </div>
+            {% elif key == 'avg_daily_carbs' and metrics.avg_daily_carbs %}
+            <div class="analytics-card analytics-carbs">
+                <div class="analytics-header">
+                    <span class="analytics-icon">{{ explanation.icon }}</span>
+                    <h3>{{ explanation.title }}</h3>
+                </div>
+                <div class="analytics-value">{{ metrics.avg_daily_carbs }}g</div>
+                <div class="analytics-target">{{ metrics.entries_with_carbs }} entries tracked</div>
+                <div class="analytics-description">{{ explanation.description }}</div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Patterns Section -->
+    {% if patterns %}
+    <section class="patterns-section">
+        <h2 class="section-title">Recurring Patterns</h2>
+        <div class="patterns-list">
+            {% for pattern in patterns %}
+            <div class="pattern-card pattern-{{ pattern.severity }}">
+                <div class="pattern-message">{{ pattern.message }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Suggestion -->
+    {% if suggestion %}
+    <section class="suggestion-section">
+        <h2 class="section-title">Personalized Suggestion</h2>
+        <div class="suggestion-card">
+            <p class="suggestion-text">{{ suggestion }}</p>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Summary Stats -->
+    <section class="summary-section">
+        <h2 class="section-title">Summary Statistics ({{ days }} days)</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-label">Total Readings</div>
+                <div class="summary-value">{{ metrics.total_readings }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Standard Deviation</div>
+                <div class="summary-value">{{ metrics.std_dev }} mmol/L</div>
+            </div>
+            {% if metrics.total_carbs > 0 %}
+            <div class="summary-item">
+                <div class="summary-label">Total Carbs Tracked</div>
+                <div class="summary-value">{{ metrics.total_carbs }}g</div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Actions -->
+    <div class="analytics-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Dashboard</a>
+        <a href="{{ url_for('export_pdf', days=days) }}" class="btn btn-primary">📋 Export PDF Report</a>
+    </div>
+</div>
+
+<style>
+.analytics-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.analytics-metrics {
+    margin-bottom: 3rem;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.analytics-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-left: 4px solid #4A90E2;
+}
+
+.analytics-card.analytics-primary {
+    border-left-color: #5CB85C;
+    background: linear-gradient(135deg, rgba(92,184,92,0.05), white);
+}
+
+.analytics-card.analytics-warning {
+    border-left-color: #D9534F;
+    background: linear-gradient(135deg, rgba(217,83,79,0.05), white);
+}
+
+.analytics-card.analytics-info {
+    border-left-color: #F0AD4E;
+    background: linear-gradient(135deg, rgba(240,173,78,0.05), white);
+}
+
+.analytics-card.analytics-carbs {
+    border-left-color: #F0AD4E;
+    background: linear-gradient(135deg, rgba(240,173,78,0.05), white);
+}
+
+.analytics-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.analytics-icon {
+    font-size: 2rem;
+}
+
+.analytics-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2C3E50;
+    margin: 0;
+}
+
+.analytics-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #4A90E2;
+    margin-bottom: 0.5rem;
+}
+
+.analytics-target {
+    font-size: 0.875rem;
+    color: #7F8C8D;
+    margin-bottom: 1rem;
+}
+
+.analytics-description {
+    font-size: 0.875rem;
+    color: #2C3E50;
+    line-height: 1.5;
+}
+
+.patterns-section {
+    margin-bottom: 3rem;
+}
+
+.patterns-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.pattern-card {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 8px;
+    border-left: 4px solid #4A90E2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.pattern-card.pattern-warning {
+    border-left-color: #F0AD4E;
+    background: rgba(240,173,78,0.05);
+}
+
+.pattern-card.pattern-success {
+    border-left-color: #5CB85C;
+    background: rgba(92,184,92,0.05);
+}
+
+.pattern-card.pattern-info {
+    border-left-color: #5BC0DE;
+    background: rgba(91,192,222,0.05);
+}
+
+.pattern-message {
+    color: #2C3E50;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.suggestion-section {
+    margin-bottom: 3rem;
+}
+
+.suggestion-card {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-top: 1.5rem;
+}
+
+.suggestion-text {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.summary-section {
+    margin-bottom: 3rem;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.summary-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.summary-label {
+    font-size: 0.875rem;
+    color: #7F8C8D;
+    margin-bottom: 0.5rem;
+}
+
+.summary-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #4A90E2;
+}
+
+.analytics-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 3rem;
+}
+</style>
+{% endblock %}

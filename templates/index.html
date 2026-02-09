@@ -1,0 +1,419 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Avatar Section -->
+    <section class="avatar-section">
+        <div class="avatar-container">
+            <div class="avatar">
+                😊
+            </div>
+            <p class="avatar-message">
+                Let's track your day together!
+            </p>
+
+            <!-- Streak Display -->
+            {% if progress['current_streak'] > 0 %}
+            <div class="streak-badge">
+                🔥 {{ progress['current_streak'] }} day streak!
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- US-21: Export Button Section -->
+    <section class="export-section">
+        <div class="export-card">
+            <h3 class="export-title">📋 Doctor-Ready Reports</h3>
+            <p class="export-description">Export professional medical reports for your healthcare provider</p>
+
+            <div class="export-options">
+                <div class="export-option">
+                    <h4>PDF Report</h4>
+                    <p>Complete analysis with charts and statistics</p>
+                    <div class="export-buttons">
+                        <a href="{{ url_for('export_pdf', days=30) }}" class="btn btn-primary btn-sm">30 Days</a>
+                        <a href="{{ url_for('export_pdf', days=60) }}" class="btn btn-primary btn-sm">60 Days</a>
+                        <a href="{{ url_for('export_pdf', days=90) }}" class="btn btn-primary btn-sm">90 Days</a>
+                    </div>
+                </div>
+
+                <div class="export-option">
+                    <h4>CSV Data</h4>
+                    <p>Raw data for Excel or Google Sheets</p>
+                    <div class="export-buttons">
+                        <a href="{{ url_for('export_csv', days=30) }}" class="btn btn-secondary btn-sm">30 Days</a>
+                        <a href="{{ url_for('export_csv', days=60) }}" class="btn btn-secondary btn-sm">60 Days</a>
+                        <a href="{{ url_for('export_csv', days=90) }}" class="btn btn-secondary btn-sm">90 Days</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- US-23: Advanced Metrics Section -->
+    {% if advanced_metrics and advanced_metrics.status != 'no_data' %}
+    <section class="metrics-section">
+        <h2 class="section-title">Your Health Metrics</h2>
+        <div class="metrics-grid">
+            <!-- Time in Range -->
+            <div class="metric-card metric-primary">
+                <div class="metric-icon">🎯</div>
+                <div class="metric-content">
+                    <h3 class="metric-label">Time in Range</h3>
+                    <p class="metric-value">{{ advanced_metrics.time_in_range_pct }}%</p>
+                    <p class="metric-target">Target: ≥70%</p>
+                </div>
+            </div>
+
+            <!-- Average Glucose -->
+            <div class="metric-card">
+                <div class="metric-icon">📉</div>
+                <div class="metric-content">
+                    <h3 class="metric-label">Average Glucose</h3>
+                    <p class="metric-value">{{ advanced_metrics.mean_glucose }} mmol/L</p>
+                    <p class="metric-target">Target: 6.0-8.0</p>
+                </div>
+            </div>
+
+            <!-- Glucose Variability -->
+            <div class="metric-card">
+                <div class="metric-icon">📊</div>
+                <div class="metric-content">
+                    <h3 class="metric-label">Variability (CV)</h3>
+                    <p class="metric-value">{{ advanced_metrics.coefficient_of_variation }}%</p>
+                    <p class="metric-target">Target: <36%</p>
+                </div>
+            </div>
+
+            <!-- Hypo Events -->
+            <div class="metric-card metric-warning">
+                <div class="metric-icon">⚠️</div>
+                <div class="metric-content">
+                    <h3 class="metric-label">Low Events</h3>
+                    <p class="metric-value">{{ advanced_metrics.hypo_events }}</p>
+                    <p class="metric-target">{{ advanced_metrics.time_below_range_pct }}% of readings</p>
+                </div>
+            </div>
+
+            <!-- Hyper Events -->
+            <div class="metric-card metric-info">
+                <div class="metric-icon">📈</div>
+                <div class="metric-content">
+                    <h3 class="metric-label">High Events</h3>
+                    <p class="metric-value">{{ advanced_metrics.hyper_events }}</p>
+                    <p class="metric-target">{{ advanced_metrics.time_above_range_pct }}% of readings</p>
+                </div>
+            </div>
+
+            <!-- US-22: Average Daily Carbs -->
+            {% if advanced_metrics.avg_daily_carbs %}
+            <div class="metric-card metric-carbs">
+                <div class="metric-icon">🥖</div>
+                <div class="metric-content">
+                    <h3 class="metric-label">Avg Daily Carbs</h3>
+                    <p class="metric-value">{{ advanced_metrics.avg_daily_carbs }}g</p>
+                    <p class="metric-target">{{ advanced_metrics.entries_with_carbs }} entries tracked</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="metrics-footer">
+            <a href="{{ url_for('analytics') }}" class="btn btn-secondary">View Detailed Analytics →</a>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Progress & Gamification Section -->
+    <section class="progress-section">
+        <div class="progress-grid">
+            <!-- Weekly Consistency Tracker - FIXED -->
+            <div class="progress-card">
+                <h3 class="progress-title">Weekly Consistency</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ weekly_consistency }}%"></div>
+                </div>
+                <p class="progress-text">
+                    {% if weekly_consistency == 100 %}
+                        Perfect week! 🎉
+                    {% elif weekly_consistency >= 85 %}
+                        Almost there! Keep it up!
+                    {% elif weekly_consistency >= 50 %}
+                        Keep logging daily!
+                    {% else %}
+                        Let's build that streak!
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Total Logs Counter -->
+            <div class="progress-card">
+                <h3 class="progress-title">Total Logs</h3>
+                <div class="progress-stat">
+                    <span class="stat-number">{{ progress['total_logs'] }}</span>
+                    <span class="stat-label">entries recorded</span>
+                </div>
+            </div>
+
+            <!-- Longest Streak -->
+            <div class="progress-card">
+                <h3 class="progress-title">Personal Best</h3>
+                <div class="progress-stat">
+                    <span class="stat-number">{{ progress['longest_streak'] }}</span>
+                    <span class="stat-label">day longest streak</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earned Badges -->
+        {% if progress['badges'] and progress['badges'][0] %}
+        <div class="badges-section">
+            <h3 class="subsection-title">Your Badges</h3>
+            <div class="badges-grid">
+                {% for badge_id in progress['badges'] %}
+                {% if badge_id %}
+                <div class="badge-item">
+                    <span class="badge-icon">
+                        {% if badge_id == 'first_log' %}🌱
+                        {% elif badge_id == 'streak_3' %}🔥
+                        {% elif badge_id == 'streak_7' %}⭐
+                        {% elif badge_id == 'streak_30' %}🏆
+                        {% elif badge_id == 'logs_50' %}📊
+                        {% elif badge_id == 'logs_100' %}💯
+                        {% else %}🎖️
+                        {% endif %}
+                    </span>
+                    <div class="badge-info">
+                        <strong>
+                            {% if badge_id == 'first_log' %}Getting Started
+                            {% elif badge_id == 'streak_3' %}3-Day Streak
+                            {% elif badge_id == 'streak_7' %}Week Warrior
+                            {% elif badge_id == 'streak_30' %}Monthly Champion
+                            {% elif badge_id == 'logs_50' %}Data Collector
+                            {% elif badge_id == 'logs_100' %}Century Club
+                            {% else %}Achievement
+                            {% endif %}
+                        </strong>
+                        <small>Well done!</small>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Tip of the Day -->
+    <section class="tip-section">
+        <div class="tip-card">
+            <div class="tip-header">
+                <span class="tip-icon">💡</span>
+                <h3 class="tip-title">Tip of the Day</h3>
+            </div>
+            <p class="tip-content">{{ daily_tip.tip }}</p>
+        </div>
+    </section>
+
+    <!-- US-22 & Chart Section: Glucose Trend with Carbs Overlay -->
+    {% if chart_data and chart_data.labels %}
+    <section class="chart-section">
+        <h2 class="section-title">Glucose & Carb Tracking</h2>
+        <div class="chart-container">
+            <canvas id="glucoseChart"></canvas>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Recent Entries -->
+    <section class="recent-entries-section">
+        <h2 class="section-title">Recent Logs</h2>
+        {% if entries %}
+            <div class="entries-grid">
+                {% for entry in entries %}
+                <div class="entry-card">
+                    <div class="entry-header">
+                        <span class="entry-time">{{ entry.timestamp.strftime('%d %b, %H:%M') }}</span>
+                        <span class="entry-mood-icon">
+                            {% if entry.mood == 'happy' %}😊
+                            {% elif entry.mood == 'calm' %}😌
+                            {% elif entry.mood == 'stressed' %}😰
+                            {% elif entry.mood == 'tired' %}😴
+                            {% elif entry.mood == 'frustrated' %}😤
+                            {% else %}🙂
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="entry-glucose">
+                        <strong>{{ entry.blood_glucose }}</strong> mmol/L
+                    </div>
+
+                    <!-- US-22: Display carbs if logged -->
+                    {% if entry.carbs_grams is not none %}
+                    <div class="entry-carbs">
+                        🥖 <span class="carbs-value">{{ entry.carbs_grams }}g</span> carbs
+                    </div>
+                    {% endif %}
+
+                    <div class="entry-meal">
+                        Meal: <span class="meal-tag">{{ entry.meal_type.capitalize() }}</span>
+                    </div>
+                    {% if entry.notes %}
+                    <div class="entry-notes">
+                        "{{ entry.notes }}"
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No entries yet. <a href="{{ url_for('log_entry') }}" class="link-primary">Start logging</a> to see your trends!</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- Quick Action Button -->
+    <div class="quick-action">
+        <a href="{{ url_for('log_entry') }}" class="btn btn-primary btn-large">
+            ➕ Log New Entry
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if chart_data and chart_data.labels %}
+<script>
+    // US-22: Enhanced chart with glucose line and carb bars
+    const ctx = document.getElementById('glucoseChart').getContext('2d');
+
+    const chartData = {
+        labels: {{ chart_data.labels | tojson }},
+        datasets: [
+            {
+                label: 'Blood Glucose (mmol/L)',
+                data: {{ chart_data.glucose | tojson }},
+                borderColor: '#4A90E2',
+                backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                pointBackgroundColor: '#4A90E2',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                yAxisID: 'y-glucose'
+            },
+            {
+                label: 'Carbs (g)',
+                data: {{ chart_data.carbs | tojson }},
+                type: 'bar',
+                backgroundColor: 'rgba(240, 173, 78, 0.3)',
+                borderColor: '#F0AD4E',
+                borderWidth: 1,
+                yAxisID: 'y-carbs'
+            }
+        ]
+    };
+
+    const config = {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 14,
+                            family: "'Inter', sans-serif"
+                        },
+                        color: '#2C3E50'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(44, 62, 80, 0.9)',
+                    padding: 12,
+                    titleFont: {
+                        size: 14
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    borderColor: '#4A90E2',
+                    borderWidth: 1
+                }
+            },
+            scales: {
+                'y-glucose': {
+                    type: 'linear',
+                    position: 'left',
+                    beginAtZero: false,
+                    min: 3.0,
+                    max: 15.0,
+                    title: {
+                        display: true,
+                        text: 'Glucose (mmol/L)',
+                        color: '#4A90E2'
+                    },
+                    ticks: {
+                        font: {
+                            size: 12
+                        },
+                        color: '#7F8C8D'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                'y-carbs': {
+                    type: 'linear',
+                    position: 'right',
+                    beginAtZero: true,
+                    max: 150,
+                    title: {
+                        display: true,
+                        text: 'Carbs (g)',
+                        color: '#F0AD4E'
+                    },
+                    ticks: {
+                        font: {
+                            size: 12
+                        },
+                        color: '#7F8C8D'
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 12
+                        },
+                        color: '#7F8C8D'
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    };
+
+    new Chart(ctx, config);
+</script>
+{% endif %}
+{% endblock %}

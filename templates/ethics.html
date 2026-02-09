@@ -1,0 +1,774 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy & Data Practices{% endblock %}
+
+{% block content %}
+<div class="privacy-policy-page">
+    <div class="policy-header">
+        <h1 class="policy-title">🔒 Privacy Policy & Data Practices</h1>
+        <p class="policy-subtitle">Last Updated: January 2026 | Effective Date: January 2026</p>
+        <p class="policy-intro">
+            We built PancrePal to support teenagers managing Type 1 diabetes. Your privacy and trust matter to us.
+            This policy explains what data we collect, how we protect it, and your rights.
+        </p>
+    </div>
+
+    <div class="policy-content">
+
+        <!-- Section 1: What We Collect -->
+        <section class="policy-section">
+            <div class="section-icon">📊</div>
+            <h2 class="section-title">What Information We Collect</h2>
+
+            <div class="subsection">
+                <h3>Account Information</h3>
+                <ul class="policy-list">
+                    <li><strong>Email address:</strong> Used for login and account identification</li>
+                    <li><strong>Password:</strong> Stored as an encrypted hash (never in plain text)</li>
+                    <li><strong>Account creation date:</strong> Automatically recorded</li>
+                    <li><strong>Last login time:</strong> Updated when you sign in</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3>Health & Activity Data</h3>
+                <ul class="policy-list">
+                    <li><strong>Blood glucose readings:</strong> Values you manually log (in mmol/L)</li>
+                    <li><strong>Meal types:</strong> Breakfast, lunch, dinner, snack, or none</li>
+                    <li><strong>Mood data:</strong> Your emotional state at time of logging</li>
+                    <li><strong>Optional notes:</strong> Any reflections or context you choose to add</li>
+                    <li><strong>Timestamps:</strong> When each entry was created</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3>Gamification & Progress</h3>
+                <ul class="policy-list">
+                    <li><strong>Logging streaks:</strong> Consecutive days with entries</li>
+                    <li><strong>Badges earned:</strong> Achievement milestones</li>
+                    <li><strong>Avatar preferences:</strong> Your selected avatar style</li>
+                    <li><strong>Reminder settings:</strong> If/when you want gentle prompts</li>
+                </ul>
+            </div>
+
+            <div class="info-box info-important">
+                <strong>We DO NOT collect:</strong> Real names, addresses, phone numbers, insurance information,
+                medical records, payment information, or any data beyond what's listed above.
+            </div>
+        </section>
+
+        <!-- Section 2: How We Use Your Data -->
+        <section class="policy-section">
+            <div class="section-icon">🎯</div>
+            <h2 class="section-title">How We Use Your Information</h2>
+
+            <p class="section-intro">We use your data solely to provide PancrePal's features:</p>
+
+            <div class="use-cases">
+                <div class="use-case">
+                    <span class="use-case-icon">📈</span>
+                    <div>
+                        <h4>Personalized Insights</h4>
+                        <p>Analyze your glucose patterns, identify trends, and generate supportive recommendations</p>
+                    </div>
+                </div>
+
+                <div class="use-case">
+                    <span class="use-case-icon">📊</span>
+                    <div>
+                        <h4>Data Visualization</h4>
+                        <p>Create weekly glucose charts and progress displays tailored to your entries</p>
+                    </div>
+                </div>
+
+                <div class="use-case">
+                    <span class="use-case-icon">🏆</span>
+                    <div>
+                        <h4>Gamification</h4>
+                        <p>Track streaks, award badges, and unlock avatar customizations based on your activity</p>
+                    </div>
+                </div>
+
+                <div class="use-case">
+                    <span class="use-case-icon">🔔</span>
+                    <div>
+                        <h4>Gentle Reminders</h4>
+                        <p>Send optional logging prompts at your chosen time (if enabled)</p>
+                    </div>
+                </div>
+
+                <div class="use-case">
+                    <span class="use-case-icon">🔐</span>
+                    <div>
+                        <h4>Account Security</h4>
+                        <p>Authenticate your identity and maintain secure sessions</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box info-success">
+                <strong>Purpose Limitation:</strong> We only use your data for the features above.
+                We never sell, rent, or share your information with third parties for marketing or advertising.
+            </div>
+        </section>
+
+        <!-- Section 3: How We Protect Your Data -->
+        <section class="policy-section">
+            <div class="section-icon">🛡️</div>
+            <h2 class="section-title">How We Protect Your Information</h2>
+
+            <div class="security-measures">
+                <div class="security-item">
+                    <h4>🔐 Password Security</h4>
+                    <p>
+                        Your password is hashed using <strong>bcrypt</strong> with 12 rounds of salting.
+                        This means we never see or store your actual password—only an encrypted version that
+                        cannot be reversed. Even if our database were compromised, your password would remain secure.
+                    </p>
+                </div>
+
+                <div class="security-item">
+                    <h4>🔒 Data Isolation</h4>
+                    <p>
+                        Each user account is completely isolated. You can only access your own glucose logs,
+                        progress, and settings. Other users cannot see your data, and you cannot see theirs.
+                    </p>
+                </div>
+
+                <div class="security-item">
+                    <h4>🍪 Session Management</h4>
+                    <p>
+                        We use secure, HTTP-only session cookies managed by Flask-Login. Sessions expire after
+                        7 days of inactivity (or immediately when you log out). The "Remember Me" option extends
+                        this for convenience without compromising security.
+                    </p>
+                </div>
+
+                <div class="security-item">
+                    <h4>💾 Database Security</h4>
+                    <p>
+                        All data is stored in a local SQLite database with proper foreign key constraints.
+                        When you delete your account, all associated data (logs, progress, settings) is
+                        automatically deleted via cascade rules.
+                    </p>
+                </div>
+
+                <div class="security-item">
+                    <h4>✅ Input Validation</h4>
+                    <p>
+                        All user inputs are validated and sanitized to prevent injection attacks. Email addresses
+                        are normalized (lowercased and trimmed). Passwords must be at least 8 characters.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Data Retention & Deletion -->
+        <section class="policy-section">
+            <div class="section-icon">🗂️</div>
+            <h2 class="section-title">Data Retention & Deletion</h2>
+
+            <div class="retention-info">
+                <h4>How Long We Keep Your Data</h4>
+                <ul class="policy-list">
+                    <li><strong>Active accounts:</strong> Data is retained indefinitely while your account is active</li>
+                    <li><strong>Inactive accounts:</strong> No automatic deletion—your data stays until you delete it</li>
+                    <li><strong>After deletion:</strong> All data is permanently removed from the database</li>
+                </ul>
+
+                <h4>Your Right to Delete</h4>
+                <p>
+                    You can delete your account at any time by contacting us. Upon deletion:
+                </p>
+                <ol class="policy-list">
+                    <li>Your account and all associated data are permanently removed</li>
+                    <li>Glucose logs, moods, notes, and progress are deleted</li>
+                    <li>Session cookies are invalidated</li>
+                    <li>This action cannot be undone—we cannot recover deleted data</li>
+                </ol>
+
+                <p class="deletion-note">
+                    <strong>Note:</strong> In this demo version, account deletion requires contacting us.
+                    A production version would include a self-service deletion option in Settings.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 5: Your Rights (GDPR) -->
+        <section class="policy-section">
+            <div class="section-icon">⚖️</div>
+            <h2 class="section-title">Your Rights Under GDPR</h2>
+
+            <p class="section-intro">
+                Even though PancrePal is a student project, we respect data protection principles.
+                If this were a commercial product serving EU residents, you would have these rights:
+            </p>
+
+            <div class="rights-grid">
+                <div class="right-item">
+                    <h4>📥 Right to Access</h4>
+                    <p>Request a copy of all data we hold about you</p>
+                </div>
+
+                <div class="right-item">
+                    <h4>✏️ Right to Rectification</h4>
+                    <p>Correct inaccurate or incomplete information</p>
+                </div>
+
+                <div class="right-item">
+                    <h4>🗑️ Right to Erasure</h4>
+                    <p>Delete your account and all associated data</p>
+                </div>
+
+                <div class="right-item">
+                    <h4>📤 Right to Data Portability</h4>
+                    <p>Export your data in a machine-readable format (e.g., CSV)</p>
+                </div>
+
+                <div class="right-item">
+                    <h4>🚫 Right to Object</h4>
+                    <p>Object to certain types of data processing</p>
+                </div>
+
+                <div class="right-item">
+                    <h4>⏸️ Right to Restriction</h4>
+                    <p>Limit how we process your information</p>
+                </div>
+            </div>
+
+            <div class="info-box info-primary">
+                <strong>How to Exercise Your Rights:</strong> Email us at [your-email@example.com] with your request.
+                We'll respond within 30 days. For this demo, some features (like data export) may need to be
+                implemented manually.
+            </div>
+        </section>
+
+        <!-- Section 6: Third-Party Services -->
+        <section class="policy-section">
+            <div class="section-icon">🌐</div>
+            <h2 class="section-title">Third-Party Services</h2>
+
+            <div class="third-party-info">
+                <h4>Services We Use</h4>
+                <ul class="policy-list">
+                    <li><strong>Chart.js (CDN):</strong> JavaScript library for glucose trend charts—no data is sent to Chart.js</li>
+                    <li><strong>Local hosting:</strong> All other code runs on your device or our server</li>
+                </ul>
+
+                <h4>What We Don't Use</h4>
+                <ul class="policy-list">
+                    <li>❌ Google Analytics or tracking pixels</li>
+                    <li>❌ Social media integrations</li>
+                    <li>❌ Advertising networks</li>
+                    <li>❌ Cloud backup services</li>
+                    <li>❌ Email marketing platforms</li>
+                </ul>
+            </div>
+
+            <div class="info-box info-success">
+                <strong>Data Sharing:</strong> We do not share, sell, or transfer your data to any third parties.
+                Period.
+            </div>
+        </section>
+
+        <!-- Section 7: Medical Disclaimer -->
+        <section class="policy-section">
+            <div class="section-icon">⚕️</div>
+            <h2 class="section-title">Important Medical Disclaimer</h2>
+
+            <div class="disclaimer-box">
+                <p class="disclaimer-title">PancrePal is NOT a Medical Device</p>
+                <p>
+                    PancrePal is a <strong>supportive companion tool</strong> designed to help you reflect on
+                    patterns and feel encouraged. It is <strong>not</strong> a substitute for:
+                </p>
+                <ul class="policy-list">
+                    <li>Professional medical advice from your endocrinologist or diabetes care team</li>
+                    <li>FDA-approved continuous glucose monitors (CGMs) or insulin pumps</li>
+                    <li>Prescribed diabetes management plans</li>
+                    <li>Emergency medical care</li>
+                </ul>
+
+                <p class="disclaimer-warning">
+                    ⚠️ <strong>Always consult your healthcare provider</strong> before making changes to your
+                    diabetes management routine. If you experience severe symptoms (extreme highs/lows, ketoacidosis,
+                    etc.), seek immediate medical attention.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 8: Cookies & Tracking -->
+        <section class="policy-section">
+            <div class="section-icon">🍪</div>
+            <h2 class="section-title">Cookies & Tracking</h2>
+
+            <div class="cookies-info">
+                <h4>Essential Cookies</h4>
+                <p>We use one session cookie to keep you logged in:</p>
+                <ul class="policy-list">
+                    <li><strong>Name:</strong> <code>session</code> (Flask default)</li>
+                    <li><strong>Purpose:</strong> Authenticate your login and maintain your session</li>
+                    <li><strong>Duration:</strong> 7 days (or until logout)</li>
+                    <li><strong>Type:</strong> HTTP-only, secure (in production)</li>
+                </ul>
+
+                <h4>Non-Essential Cookies</h4>
+                <p>We do not use:</p>
+                <ul class="policy-list">
+                    <li>❌ Analytics cookies</li>
+                    <li>❌ Advertising cookies</li>
+                    <li>❌ Social media cookies</li>
+                    <li>❌ Tracking pixels or beacons</li>
+                </ul>
+
+                <p class="cookie-note">
+                    <strong>Note:</strong> Because we only use essential session cookies, you cannot opt out
+                    without being unable to log in. However, you can clear cookies in your browser settings
+                    at any time (this will log you out).
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 9: Age & Consent -->
+        <section class="policy-section">
+            <div class="section-icon">👤</div>
+            <h2 class="section-title">Age Requirements & Consent</h2>
+
+            <div class="age-info">
+                <h4>Designed for Teenagers</h4>
+                <p>
+                    PancrePal is designed for teenagers (ages 13-19) managing Type 1 diabetes. However,
+                    we recommend:
+                </p>
+                <ul class="policy-list">
+                    <li><strong>Ages 13-15:</strong> Use with parental/guardian awareness and support</li>
+                    <li><strong>Ages 16+:</strong> Can use independently, but parent involvement is encouraged</li>
+                </ul>
+
+                <h4>Parental Rights</h4>
+                <p>
+                    If you are under 16 and in the EU, or under 13 and in the US, your parent/guardian may:
+                </p>
+                <ul class="policy-list">
+                    <li>Request access to your data</li>
+                    <li>Request correction or deletion of your data</li>
+                    <li>Withdraw consent for data processing</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 10: Student Project Notice -->
+        <section class="policy-section">
+            <div class="section-icon">🎓</div>
+            <h2 class="section-title">Student Project Disclosure</h2>
+
+            <div class="info-box info-warning">
+                <p>
+                    <strong>Important:</strong> PancrePal is a Final Year Project (FYP) developed by a Business Information Systems
+                    student. This means:
+                </p>
+                <ul class="policy-list">
+                    <li>This is a <strong>demonstration/prototype</strong>, not a commercial product</li>
+                    <li>It is hosted locally or on educational infrastructure</li>
+                    <li>Data is stored in a demo database (SQLite)</li>
+                    <li>The project may be discontinued after academic evaluation</li>
+                    <li>Some features (like data export) may be limited or manual</li>
+                </ul>
+
+                <p>
+                    <strong>If this were a commercial product:</strong> We would use enterprise-grade hosting,
+                    implement automated data export, provide 24/7 support, and undergo third-party security audits.
+                    This FYP version demonstrates the technical implementation and ethical considerations for such a system.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 11: Changes to This Policy -->
+        <section class="policy-section">
+            <div class="section-icon">📝</div>
+            <h2 class="section-title">Changes to This Privacy Policy</h2>
+
+            <p>
+                We may update this privacy policy to reflect changes in our practices or for legal/regulatory reasons.
+                If we make significant changes:
+            </p>
+            <ul class="policy-list">
+                <li>We'll update the "Last Updated" date at the top of this page</li>
+                <li>We'll notify you via email (if we have your address on file)</li>
+                <li>We'll display a notice on the dashboard for 30 days</li>
+                <li>Your continued use of PancrePal after changes constitutes acceptance</li>
+            </ul>
+
+            <p>
+                We recommend reviewing this policy periodically to stay informed about how we protect your information.
+            </p>
+        </section>
+
+        <!-- Section 12: Contact & Questions -->
+        <section class="policy-section">
+            <div class="section-icon">📧</div>
+            <h2 class="section-title">Contact Us</h2>
+
+            <div class="contact-info">
+                <p>
+                    If you have questions about this privacy policy, want to exercise your data rights,
+                    or have concerns about how your information is handled:
+                </p>
+
+                <div class="contact-box">
+                    <h4>📬 Email Us</h4>
+                    <p><strong>[your-email@example.com]</strong></p>
+                    <p class="contact-note">We'll respond within 7 business days (usually faster!)</p>
+                </div>
+
+                <div class="contact-box">
+                    <h4>🎓 Project Supervisor</h4>
+                    <p>For academic inquiries: <strong>[supervisor-email@university.ie]</strong></p>
+                </div>
+
+                <p class="final-note">
+                    Your privacy and trust matter to us. We're committed to transparency and will always
+                    work to address your concerns in good faith. 💙
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="policy-footer">
+        <a href="{{ url_for('index') if current_user.is_authenticated else url_for('register') }}" class="btn btn-primary">
+            {% if current_user.is_authenticated %}
+                Back to Dashboard
+            {% else %}
+                Get Started
+            {% endif %}
+        </a>
+        <a href="{{ url_for('register') }}" class="btn btn-secondary">
+            Create Account
+        </a>
+    </div>
+</div>
+
+<style>
+/* Privacy Policy Specific Styles */
+.privacy-policy-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+.policy-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+}
+
+.policy-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.policy-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+}
+
+.policy-intro {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+    opacity: 0.95;
+}
+
+.policy-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.policy-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #e1e8ed;
+}
+
+.policy-section:last-child {
+    border-bottom: none;
+}
+
+.section-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.section-intro {
+    color: #7f8c8d;
+    font-size: 1.05rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.subsection {
+    margin-bottom: 1.5rem;
+}
+
+.subsection h3,
+.subsection h4 {
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.policy-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 1rem 0;
+}
+
+.policy-list li {
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    position: relative;
+    line-height: 1.6;
+    color: #555;
+}
+
+.policy-list li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #5CB85C;
+    font-weight: bold;
+}
+
+/* Info Boxes */
+.info-box {
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    border-left: 4px solid;
+}
+
+.info-important {
+    background-color: rgba(217, 83, 79, 0.1);
+    border-color: #D9534F;
+    color: #a94442;
+}
+
+.info-success {
+    background-color: rgba(92, 184, 92, 0.1);
+    border-color: #5CB85C;
+    color: #3c763d;
+}
+
+.info-warning {
+    background-color: rgba(240, 173, 78, 0.1);
+    border-color: #F0AD4E;
+    color: #8a6d3b;
+}
+
+.info-primary {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-color: #4A90E2;
+    color: #2c5282;
+}
+
+/* Use Cases */
+.use-cases {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.use-case {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #4A90E2;
+}
+
+.use-case-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.use-case h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.use-case p {
+    margin: 0;
+    color: #7f8c8d;
+    line-height: 1.5;
+}
+
+/* Security Measures */
+.security-measures,
+.retention-info,
+.third-party-info,
+.cookies-info,
+.age-info {
+    margin-top: 1.5rem;
+}
+
+.security-item {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.security-item h4 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.security-item p {
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Rights Grid */
+.rights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.right-item {
+    padding: 1.25rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-top: 3px solid #4A90E2;
+}
+
+.right-item h4 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.right-item p {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Disclaimer Box */
+.disclaimer-box {
+    background-color: rgba(217, 83, 79, 0.05);
+    border: 2px solid #D9534F;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.disclaimer-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #D9534F;
+    margin-bottom: 1rem;
+}
+
+.disclaimer-warning {
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #D9534F;
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+/* Contact Boxes */
+.contact-box {
+    background-color: #f8f9fa;
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 3px solid #4A90E2;
+}
+
+.contact-box h4 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.contact-note {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.final-note {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: rgba(74, 144, 226, 0.05);
+    border-radius: 8px;
+    text-align: center;
+    font-style: italic;
+    color: #4A90E2;
+}
+
+/* Footer */
+.policy-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e1e8ed;
+}
+
+.deletion-note,
+.cookie-note {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: rgba(240, 173, 78, 0.1);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #8a6d3b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .policy-title {
+        font-size: 2rem;
+    }
+
+    .policy-content {
+        padding: 1.5rem;
+    }
+
+    .rights-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .policy-footer {
+        flex-direction: column;
+    }
+
+    .policy-footer .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
