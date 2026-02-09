@@ -1,7 +1,16 @@
-Flask==3.0.0
+Flask==3.0.3
 Flask-Login==0.6.3
 Flask-SQLAlchemy==3.1.1
-Werkzeug==3.0.1
-reportlab==4.0.7
-matplotlib==3.8.2
-gunicorn==21.2.0
+Werkzeug==3.0.3
+
+# PDF generation
+reportlab==4.2.2
+
+# Charts and visualization  
+matplotlib==3.9.0
+
+# Image processing (FIXED for Python 3.13)
+Pillow==11.0.0
+
+# Production server
+gunicorn==22.0.0
