@@ -23,28 +23,20 @@
         </div>
     </section>
 
-    <!-- US-21: CSV Export Section (PDF temporarily disabled) -->
+    <!-- US-21: CSV Export Section (Centered, No PDF) -->
     <section class="export-section">
         <div class="export-card">
             <h3 class="export-title">📋 Export Your Data</h3>
             <p class="export-description">Download your glucose data for your healthcare provider or personal records</p>
 
-            <div class="export-options">
-                <div class="export-option">
+            <div class="export-options-centered">
+                <div class="export-option-single">
                     <h4>📊 CSV Spreadsheet</h4>
                     <p>Complete data export for Excel, Google Sheets, or your doctor's systems</p>
                     <div class="export-buttons">
                         <a href="{{ url_for('export_csv', days=30) }}" class="btn btn-primary btn-sm">30 Days</a>
                         <a href="{{ url_for('export_csv', days=60) }}" class="btn btn-primary btn-sm">60 Days</a>
                         <a href="{{ url_for('export_csv', days=90) }}" class="btn btn-primary btn-sm">90 Days</a>
-                    </div>
-                </div>
-
-                <div class="export-option export-option-disabled">
-                    <h4>📄 PDF Report</h4>
-                    <p>Professional medical report with charts and statistics</p>
-                    <div class="info-note">
-                        📝 <strong>Coming Soon:</strong> PDF reports will be available after deployment to production hosting. CSV export provides all your data in the meantime.
                     </div>
                 </div>
             </div>
