@@ -36,20 +36,38 @@
                 <h1 class="logo">🥞 PancrePal</h1>
 
                 {% if current_user.is_authenticated %}
-                <ul class="nav-links">
-                    <li><a href="{{ url_for('index') }}" class="nav-link">Dashboard</a></li>
-                    <li><a href="{{ url_for('log_entry') }}" class="nav-link">Quick Log</a></li>
-                    <li><a href="{{ url_for('avatar') }}" class="nav-link">Avatar</a></li>
-                    <li><a href="{{ url_for('settings') }}" class="nav-link">Settings</a></li>
-                    <li><a href="{{ url_for('ethics') }}" class="nav-link">Data Ethics</a></li>
-                </ul>
+                <!-- Mobile Hamburger Button -->
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
 
-                <div class="nav-user">
-                    <span class="user-email">{{ current_user.email }}</span>
-                    <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+                <!-- Navigation Links (Desktop + Mobile Drawer) -->
+                <div class="nav-menu" id="navMenu">
+                    <div class="nav-menu-header">
+                        <h2 class="nav-menu-title">Menu</h2>
+                        <button class="nav-close" id="navClose" aria-label="Close menu">×</button>
+                    </div>
+
+                    <ul class="nav-links">
+                        <li><a href="{{ url_for('index') }}" class="nav-link">📊 Dashboard</a></li>
+                        <li><a href="{{ url_for('log_entry') }}" class="nav-link">✏️ Quick Log</a></li>
+                        <li><a href="{{ url_for('avatar') }}" class="nav-link">🎨 Avatar</a></li>
+                        <li><a href="{{ url_for('settings') }}" class="nav-link">⚙️ Settings</a></li>
+                        <li><a href="{{ url_for('ethics') }}" class="nav-link">🔒 Data Ethics</a></li>
+                    </ul>
+
+                    <div class="nav-user-mobile">
+                        <span class="user-email">{{ current_user.email }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+                    </div>
                 </div>
+
+                <!-- Mobile Overlay -->
+                <div class="nav-overlay" id="navOverlay"></div>
                 {% else %}
-                <ul class="nav-links">
+                <ul class="nav-links nav-links-guest">
                     <li><a href="{{ url_for('ethics') }}" class="nav-link">About</a></li>
                     <li><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
                     <li><a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a></li>
@@ -93,76 +111,42 @@
 
     {% block extra_scripts %}{% endblock %}
 
-    <!-- ========================================
-         PWA SERVICE WORKER - DISABLED FOR DEVELOPMENT
-
-         ⚠️ IMPORTANT: Service Worker is DISABLED during localhost development
-         to prevent caching conflicts with Flask authentication and sessions.
-
-         ✅ RE-ENABLE THIS before deploying to production!
-
-         Instructions to re-enable:
-         1. Find the comment block below that says "UNCOMMENT FOR PRODUCTION"
-         2. Remove the /* at the start and */ at the end
-         3. Deploy to production with HTTPS
-         4. Service worker will work perfectly!
-         ======================================== -->
+    <!-- Mobile Menu JavaScript -->
     <script>
-        console.log('🔧 PWA Service Worker: DISABLED for development');
-        console.log('✅ Re-enable before deploying to production!');
+        // Mobile hamburger menu
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        const navOverlay = document.getElementById('navOverlay');
+        const navClose = document.getElementById('navClose');
 
-         ========== UNCOMMENT FOR PRODUCTION ==========
-
-        let deferredPrompt;
-        let swRegistration = null;
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(function(registration) {
-                        console.log('✓ Service Worker registered');
-                        console.log('Scope:', registration.scope);
-                        swRegistration = registration;
-
-                        // Check for updates every hour
-                        setInterval(() => {
-                            registration.update();
-                        }, 3600000);
-                    })
-                    .catch(function(error) {
-                        console.log('✗ Service Worker registration failed:', error);
-                    });
+        if (hamburger) {
+            // Open menu
+            hamburger.addEventListener('click', () => {
+                navMenu.classList.add('active');
+                navOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
             });
-        } else {
-            console.log('Service Worker not supported');
+
+            // Close menu
+            const closeMenu = () => {
+                navMenu.classList.remove('active');
+                navOverlay.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
+            };
+
+            navClose.addEventListener('click', closeMenu);
+            navOverlay.addEventListener('click', closeMenu);
+
+            // Close on link click (mobile)
+            const navLinks = navMenu.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        closeMenu();
+                    }
+                });
+            });
         }
-
-        // PWA Install Prompt
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            console.log('💡 PancrePal is ready to install!');
-        });
-
-        window.addEventListener('appinstalled', () => {
-            console.log('✓ PancrePal has been installed!');
-            deferredPrompt = null;
-        });
-
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-            console.log('✓ Running as installed PWA');
-            document.body.classList.add('is-pwa');
-        }
-
-        window.addEventListener('online', () => {
-            console.log('✓ Back online');
-        });
-
-        window.addEventListener('offline', () => {
-            console.log('✗ Offline mode');
-        });
-
-        ========== END PRODUCTION CODE ==========
     </script>
 </body>
 </html>
