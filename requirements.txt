@@ -13,10 +13,10 @@ bcrypt==4.1.2
 reportlab==4.2.2
 
 # Charts and visualization (downgraded for stability)
-matplotlib==3.7.5
+matplotlib==3.9.0
 
 # Image processing
-Pillow==10.2.0
+Pillow==10.4.0
 
 # Production server
 gunicorn==22.0.0
