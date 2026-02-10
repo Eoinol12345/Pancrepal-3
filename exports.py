@@ -1,3 +1,21 @@
+"""
+US-21: Doctor-Ready Export (PDF + CSV)
+
+Professional medical reports for healthcare providers.
+
+MEMORY OPTIMIZATIONS:
+- Reduced chart size and DPI (saves ~50% on chart memory)
+- Limited detailed log to 30 entries (saves ~40% on table data)
+- Aggressive memory cleanup with plt.close() and gc.collect()
+- FIXED: Date axis tick calculation to prevent MAXTICKS error
+
+FIXES:
+- Irish/European date format (DD/MM instead of MM/DD)
+- Full meal names (dinner not truncated to "dinne")
+- Longer notes display (35 chars instead of 20)
+- Smart date tick intervals based on data range
+"""
+
 import csv
 import io
 import gc  # OPTIMIZATION: Garbage collection for memory cleanup
@@ -70,7 +88,7 @@ def generate_csv_export(entries: List[LogEntry]) -> str:
 
 
 # ============================================================================
-# PDF EXPORT - CHARTS (OPTIMIZED)
+# PDF EXPORT - CHARTS (OPTIMIZED + FIXED)
 # ============================================================================
 
 def create_glucose_trend_chart(entries: List[LogEntry]) -> BytesIO:
@@ -78,6 +96,7 @@ def create_glucose_trend_chart(entries: List[LogEntry]) -> BytesIO:
     Create professional glucose trend chart for PDF embedding.
     
     OPTIMIZATION: Reduced size (7x3 instead of 10x4) and DPI (100 instead of 150)
+    FIX: Smart date tick intervals to prevent MAXTICKS error
     Memory savings: ~50% reduction
 
     Args:
@@ -111,10 +130,22 @@ def create_glucose_trend_chart(entries: List[LogEntry]) -> BytesIO:
     ax.grid(True, alpha=0.3)
     ax.legend(loc='upper right', fontsize=7)
 
-    # Format x-axis dates - DD/MM format
+    # FIX: Smart date axis formatting - prevents MAXTICKS error
+    unique_dates = sorted(set(e.timestamp.date() for e in sorted_entries))
+    num_days = len(unique_dates)
+    
+    # Smart tick interval based on date range
+    if num_days <= 7:
+        tick_interval = 1  # Show every day
+    elif num_days <= 30:
+        tick_interval = 3  # Show every 3 days
+    elif num_days <= 60:
+        tick_interval = 7  # Show every week
+    else:
+        tick_interval = 14  # Show every 2 weeks
+    
+    ax.xaxis.set_major_locator(mdates.DayLocator(interval=tick_interval))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
-    ax.xaxis.set_major_locator(
-        mdates.DayLocator(interval=max(1, len(set(e.timestamp.date() for e in sorted_entries)) // 7)))
     plt.xticks(rotation=45, ha='right', fontsize=8)
     plt.yticks(fontsize=8)
 
@@ -139,6 +170,7 @@ def create_carb_overlay_chart(entries: List[LogEntry]) -> BytesIO:
     Create chart with glucose line and carb bars overlay.
     
     OPTIMIZATION: Reduced size and DPI for memory efficiency
+    FIX: Smart date tick intervals to prevent MAXTICKS error
 
     US-22: Visual correlation between carbs and glucose
 
@@ -176,10 +208,22 @@ def create_carb_overlay_chart(entries: List[LogEntry]) -> BytesIO:
     ax1.set_title('Glucose & Carbohydrate Correlation', fontsize=11, fontweight='bold')
     ax1.grid(True, alpha=0.3)
 
-    # Format x-axis - DD/MM format
+    # FIX: Smart date axis formatting - prevents MAXTICKS error
+    unique_dates = sorted(set(e.timestamp.date() for e in sorted_entries))
+    num_days = len(unique_dates)
+    
+    # Smart tick interval based on date range
+    if num_days <= 7:
+        tick_interval = 1  # Show every day
+    elif num_days <= 30:
+        tick_interval = 3  # Show every 3 days
+    elif num_days <= 60:
+        tick_interval = 7  # Show every week
+    else:
+        tick_interval = 14  # Show every 2 weeks
+    
+    ax1.xaxis.set_major_locator(mdates.DayLocator(interval=tick_interval))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
-    ax1.xaxis.set_major_locator(
-        mdates.DayLocator(interval=max(1, len(set(e.timestamp.date() for e in sorted_entries)) // 7)))
     plt.xticks(rotation=45, ha='right', fontsize=8)
 
     # Combined legend
@@ -219,6 +263,7 @@ def generate_pdf_report(user_email: str, entries: List[LogEntry], days: int = 30
     - Reduced chart sizes and DPI
     - Limited detailed log to 30 entries (was 50)
     - Aggressive cleanup with gc.collect()
+    - Fixed date axis to prevent MAXTICKS error
 
     Args:
         user_email: Patient identifier
@@ -259,7 +304,7 @@ def generate_pdf_report(user_email: str, entries: List[LogEntry], days: int = 30
     story.append(Spacer(1, 0.2 * inch))
 
     # Patient information table - Irish date format
-    report_date = datetime.now().strftime('%d %B %Y')
+    report_date = datetime.now().strftime('%d %B %Y')  # e.g., "10 February 2026"
     date_range_start = min(e.timestamp for e in entries).strftime('%d %B %Y')
     date_range_end = max(e.timestamp for e in entries).strftime('%d %B %Y')
 
@@ -365,11 +410,11 @@ def generate_pdf_report(user_email: str, entries: List[LogEntry], days: int = 30
 
     for entry in sorted(entries, key=lambda e: e.timestamp, reverse=True)[:30]:
         table_data.append([
-            entry.timestamp.strftime('%d/%m'),
+            entry.timestamp.strftime('%d/%m'),  # DD/MM format
             entry.timestamp.strftime('%H:%M'),
             f'{entry.blood_glucose}',
             f'{entry.carbs_grams}g' if entry.carbs_grams else '-',
-            entry.meal_type.capitalize()[:8],
+            entry.meal_type.capitalize()[:8],  # Full meal name (max 8 chars for table)
             (entry.notes[:35] + '...') if entry.notes and len(entry.notes) > 35 else (entry.notes or '-')
         ])
 
