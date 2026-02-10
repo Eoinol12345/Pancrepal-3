@@ -2,7 +2,7 @@
 PancrePal - Diabetes Companion Web App
 Iteration 5: Advanced Features
 
-US-21: Doctor-Ready Export (PDF + CSV)
+US-21: Doctor-Ready Export (CSV only - PDF disabled for hosting)
 US-22: Carbohydrate Tracking
 US-23: Advanced Analytics & Metrics
 
@@ -26,7 +26,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 from db import db, User, LogEntry, UserProgress
 from gamification import update_streak, check_and_award_badges, get_daily_tip, should_show_reminder
 from analytics import calculate_advanced_metrics, identify_recurring_patterns, generate_weekly_suggestion, get_metric_explanation
-from exports import generate_csv_export, generate_pdf_report
+from exports import generate_csv_export
 
 # Initialize database with app
 db.init_app(app)
@@ -308,7 +308,7 @@ def log_entry():
 
 
 # ============================================================================
-# US-21: EXPORT ROUTES
+# US-21: EXPORT ROUTES (CSV ONLY)
 # ============================================================================
 
 @app.route('/export/csv')
@@ -343,37 +343,8 @@ def export_csv():
     return response
 
 
-@app.route('/export/pdf')
-@login_required
-def export_pdf():
-    """
-    Export comprehensive PDF report for healthcare providers.
-    US-21: Professional medical report with charts and analytics.
-    """
-    user_id = current_user.id
-    days = request.args.get('days', 30, type=int)
-
-    # Get entries for specified period
-    cutoff_date = datetime.utcnow() - timedelta(days=days)
-    entries = LogEntry.query.filter(
-        LogEntry.user_id == user_id,
-        LogEntry.timestamp >= cutoff_date
-    ).order_by(LogEntry.timestamp.desc()).all()
-
-    if not entries:
-        flash('No data available for export.', 'error')
-        return redirect(url_for('index'))
-
-    # Generate PDF
-    pdf_buffer = generate_pdf_report(current_user.email, entries, days)
-
-    # Send file
-    return send_file(
-        pdf_buffer,
-        as_attachment=True,
-        download_name=f'pancrepal_report_{days}days_{datetime.now().strftime("%Y%m%d")}.pdf',
-        mimetype='application/pdf'
-    )
+# PDF export temporarily disabled due to hosting memory constraints
+# Will be re-enabled in production deployment
 
 
 # ============================================================================
