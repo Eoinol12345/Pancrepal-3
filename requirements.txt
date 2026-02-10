@@ -1,5 +1,6 @@
 # PancrePal Dependencies
-# Optimized for Python 3.11 stability
+# Optimized for Python 3.11+ stability
+# PDF dependencies removed to reduce memory footprint
 
 Flask==3.0.3
 Flask-Login==0.6.3
@@ -8,15 +9,6 @@ Werkzeug==3.0.3
 
 # Authentication
 bcrypt==4.1.2
-
-# PDF generation
-reportlab==4.2.2
-
-# Charts and visualization (downgraded for stability)
-matplotlib==3.9.0
-
-# Image processing
-Pillow==10.4.0
 
 # Production server
 gunicorn==22.0.0
