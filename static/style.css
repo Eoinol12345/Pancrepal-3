@@ -66,6 +66,12 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+
+    /* iOS Safe Area Support */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
 }
 
 /* Container */
@@ -87,12 +93,19 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+
+    /* iOS Safe Area - additional padding at top */
+    padding-top: max(var(--space-lg), env(safe-area-inset-top));
 }
 
 .nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    /* Account for safe area insets on sides (for notched iPhones in landscape) */
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
 }
 
 .logo {
@@ -1208,6 +1221,13 @@ body {
     cursor: pointer;
     padding: 0;
     z-index: 1001;
+
+    /* iOS touch fix - CRITICAL for menu to work */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .hamburger-line {
