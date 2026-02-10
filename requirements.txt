@@ -1,5 +1,5 @@
 # PancrePal Dependencies
-# Tested and working on Render with Python 3.13
+# Optimized for Python 3.11 stability
 
 Flask==3.0.3
 Flask-Login==0.6.3
@@ -12,11 +12,11 @@ bcrypt==4.1.2
 # PDF generation
 reportlab==4.2.2
 
-# Charts and visualization  
-matplotlib==3.9.0
+# Charts and visualization (downgraded for stability)
+matplotlib==3.7.5
 
-# Image processing (FIXED for Python 3.13)
-Pillow==11.0.0
+# Image processing
+Pillow==10.2.0
 
 # Production server
 gunicorn==22.0.0
