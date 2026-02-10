@@ -1,21 +1,3 @@
-"""
-US-21: Doctor-Ready Export (PDF + CSV)
-
-Professional medical reports for healthcare providers.
-
-MEMORY OPTIMIZATIONS:
-- Reduced chart size and DPI (saves ~50% on chart memory)
-- Limited detailed log to 30 entries (saves ~40% on table data)
-- Aggressive memory cleanup with plt.close() and gc.collect()
-- FIXED: Date axis tick calculation to prevent MAXTICKS error
-
-FIXES:
-- Irish/European date format (DD/MM instead of MM/DD)
-- Full meal names (dinner not truncated to "dinne")
-- Longer notes display (35 chars instead of 20)
-- Smart date tick intervals based on data range
-"""
-
 import csv
 import io
 import gc  # OPTIMIZATION: Garbage collection for memory cleanup
@@ -94,7 +76,7 @@ def generate_csv_export(entries: List[LogEntry]) -> str:
 def create_glucose_trend_chart(entries: List[LogEntry]) -> BytesIO:
     """
     Create professional glucose trend chart for PDF embedding.
-    
+
     OPTIMIZATION: Reduced size (7x3 instead of 10x4) and DPI (100 instead of 150)
     FIX: Smart date tick intervals to prevent MAXTICKS error
     Memory savings: ~50% reduction
@@ -133,7 +115,7 @@ def create_glucose_trend_chart(entries: List[LogEntry]) -> BytesIO:
     # FIX: Smart date axis formatting - prevents MAXTICKS error
     unique_dates = sorted(set(e.timestamp.date() for e in sorted_entries))
     num_days = len(unique_dates)
-    
+
     # Smart tick interval based on date range
     if num_days <= 7:
         tick_interval = 1  # Show every day
@@ -143,7 +125,7 @@ def create_glucose_trend_chart(entries: List[LogEntry]) -> BytesIO:
         tick_interval = 7  # Show every week
     else:
         tick_interval = 14  # Show every 2 weeks
-    
+
     ax.xaxis.set_major_locator(mdates.DayLocator(interval=tick_interval))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
     plt.xticks(rotation=45, ha='right', fontsize=8)
@@ -158,7 +140,7 @@ def create_glucose_trend_chart(entries: List[LogEntry]) -> BytesIO:
     buffer = BytesIO()
     plt.savefig(buffer, format='png', dpi=100, bbox_inches='tight')
     buffer.seek(0)
-    
+
     # OPTIMIZATION: Force cleanup
     plt.close(fig)
 
@@ -168,7 +150,7 @@ def create_glucose_trend_chart(entries: List[LogEntry]) -> BytesIO:
 def create_carb_overlay_chart(entries: List[LogEntry]) -> BytesIO:
     """
     Create chart with glucose line and carb bars overlay.
-    
+
     OPTIMIZATION: Reduced size and DPI for memory efficiency
     FIX: Smart date tick intervals to prevent MAXTICKS error
 
@@ -211,7 +193,7 @@ def create_carb_overlay_chart(entries: List[LogEntry]) -> BytesIO:
     # FIX: Smart date axis formatting - prevents MAXTICKS error
     unique_dates = sorted(set(e.timestamp.date() for e in sorted_entries))
     num_days = len(unique_dates)
-    
+
     # Smart tick interval based on date range
     if num_days <= 7:
         tick_interval = 1  # Show every day
@@ -221,7 +203,7 @@ def create_carb_overlay_chart(entries: List[LogEntry]) -> BytesIO:
         tick_interval = 7  # Show every week
     else:
         tick_interval = 14  # Show every 2 weeks
-    
+
     ax1.xaxis.set_major_locator(mdates.DayLocator(interval=tick_interval))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
     plt.xticks(rotation=45, ha='right', fontsize=8)
@@ -237,7 +219,7 @@ def create_carb_overlay_chart(entries: List[LogEntry]) -> BytesIO:
     buffer = BytesIO()
     plt.savefig(buffer, format='png', dpi=100, bbox_inches='tight')
     buffer.seek(0)
-    
+
     # OPTIMIZATION: Force cleanup
     plt.close(fig)
 
@@ -377,7 +359,7 @@ def generate_pdf_report(user_email: str, entries: List[LogEntry], days: int = 30
     chart_img = Image(chart_buffer, width=5.5 * inch, height=2.2 * inch)
     story.append(chart_img)
     story.append(Spacer(1, 0.2 * inch))
-    
+
     # OPTIMIZATION: Close buffer
     chart_buffer.close()
 
@@ -393,7 +375,7 @@ def generate_pdf_report(user_email: str, entries: List[LogEntry], days: int = 30
         carb_chart_img = Image(carb_chart_buffer, width=5.5 * inch, height=2.2 * inch)
         story.append(carb_chart_img)
         story.append(Spacer(1, 0.3 * inch))
-        
+
         # OPTIMIZATION: Close buffer
         carb_chart_buffer.close()
 
@@ -450,7 +432,7 @@ def generate_pdf_report(user_email: str, entries: List[LogEntry], days: int = 30
     # Build PDF
     doc.build(story)
     buffer.seek(0)
-    
+
     # OPTIMIZATION: Final garbage collection
     gc.collect()
 
