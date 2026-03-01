@@ -29,6 +29,32 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
+    <!-- ================================================================
+         US-26: DEMO MODE BANNER
+         Always visible at the top when in demo mode.
+         ================================================================ -->
+    {% if is_demo %}
+    <div class="demo-banner" role="alert" aria-live="polite">
+        <div class="demo-banner-inner">
+            <div class="demo-banner-left">
+                <span class="demo-pill">DEMO MODE</span>
+                <span class="demo-banner-text">
+                    You are viewing <strong>read-only sample data</strong>.
+                    Logging, exports and settings are disabled.
+                </span>
+            </div>
+            <div class="demo-banner-right">
+                <a href="{{ url_for('register') }}" class="demo-cta">
+                    Create Free Account
+                </a>
+                <a href="{{ url_for('logout') }}" class="demo-exit">
+                    Exit Demo
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Navigation Header -->
     <header class="header">
         <div class="container">
@@ -52,16 +78,49 @@
 
                     <ul class="nav-links">
                         <li><a href="{{ url_for('index') }}" class="nav-link">📊 Dashboard</a></li>
+
+                        <!-- Disable destructive nav links in demo mode -->
+                        {% if is_demo %}
+                        <li>
+                            <span class="nav-link nav-link-disabled"
+                                  title="Logging is disabled in demo mode">
+                                ✏️ Quick Log <span class="nav-demo-tag">Demo</span>
+                            </span>
+                        </li>
+                        {% else %}
                         <li><a href="{{ url_for('log_entry') }}" class="nav-link">✏️ Quick Log</a></li>
+                        {% endif %}
+
+                        <li><a href="{{ url_for('analytics') }}" class="nav-link">🔍 Analytics</a></li>
                         <li><a href="{{ url_for('avatar') }}" class="nav-link">🎨 Avatar</a></li>
                         <li><a href="{{ url_for('settings') }}" class="nav-link">⚙️ Settings</a></li>
                         <li><a href="{{ url_for('ethics') }}" class="nav-link">🔒 Data Ethics</a></li>
                     </ul>
 
                     <div class="nav-user-mobile">
+                        {% if is_demo %}
+                        <span class="user-email">👀 Demo Account</span>
+                        <a href="{{ url_for('register') }}" class="btn btn-logout"
+                           style="background:#5CB85C;">Create Account</a>
+                        <a href="{{ url_for('logout') }}" class="btn btn-logout"
+                           style="margin-top:.5rem;">Exit Demo</a>
+                        {% else %}
                         <span class="user-email">{{ current_user.email }}</span>
                         <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+                        {% endif %}
                     </div>
+                </div>
+
+                <!-- Desktop User Info & Logout (hidden on mobile via CSS) -->
+                <div class="nav-user">
+                    {% if is_demo %}
+                    <span class="user-email-desktop">👀 Demo Account</span>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Create Account</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">Exit Demo</a>
+                    {% else %}
+                    <span class="user-email-desktop">{{ current_user.email }}</span>
+                    <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">Logout</a>
+                    {% endif %}
                 </div>
 
                 <!-- Mobile Overlay -->
@@ -69,6 +128,7 @@
                 {% else %}
                 <ul class="nav-links nav-links-guest">
                     <li><a href="{{ url_for('ethics') }}" class="nav-link">About</a></li>
+                    <li><a href="{{ url_for('demo') }}" class="nav-link">Try Demo</a></li>
                     <li><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
                     <li><a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a></li>
                 </ul>
@@ -105,6 +165,9 @@
             <p class="footer-text">
                 PancrePal - A supportive companion, not a replacement for medical advice.
                 <a href="{{ url_for('ethics') }}" class="footer-link">Learn about our data practices</a>
+                {% if is_demo %}
+                &nbsp;|&nbsp; <a href="{{ url_for('register') }}" class="footer-link">Create your free account</a>
+                {% endif %}
             </p>
         </div>
     </footer>
@@ -113,40 +176,174 @@
 
     <!-- Mobile Menu JavaScript -->
     <script>
-        // Mobile hamburger menu
-        const hamburger = document.getElementById('hamburger');
-        const navMenu = document.getElementById('navMenu');
+        const hamburger  = document.getElementById('hamburger');
+        const navMenu    = document.getElementById('navMenu');
         const navOverlay = document.getElementById('navOverlay');
-        const navClose = document.getElementById('navClose');
+        const navClose   = document.getElementById('navClose');
 
         if (hamburger) {
-            // Open menu
             hamburger.addEventListener('click', () => {
                 navMenu.classList.add('active');
                 navOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Prevent scrolling
+                document.body.style.overflow = 'hidden';
             });
 
-            // Close menu
             const closeMenu = () => {
                 navMenu.classList.remove('active');
                 navOverlay.classList.remove('active');
-                document.body.style.overflow = ''; // Restore scrolling
+                document.body.style.overflow = '';
             };
 
             navClose.addEventListener('click', closeMenu);
             navOverlay.addEventListener('click', closeMenu);
 
-            // Close on link click (mobile)
-            const navLinks = navMenu.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
+            navMenu.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        closeMenu();
-                    }
+                    if (window.innerWidth <= 768) closeMenu();
                 });
             });
         }
     </script>
+
+    <style>
+    /* ============================================================
+       US-26: DEMO MODE BANNER STYLES
+       ============================================================ */
+    .demo-banner {
+        background: linear-gradient(90deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: white;
+        padding: 0.6rem 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+
+    .demo-banner-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .demo-banner-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .demo-pill {
+        background: #e74c3c;
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        white-space: nowrap;
+        text-transform: uppercase;
+        flex-shrink: 0;
+    }
+
+    .demo-banner-text {
+        font-size: 0.875rem;
+        opacity: 0.92;
+        line-height: 1.4;
+    }
+
+    .demo-banner-right {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .demo-cta {
+        background: #5CB85C;
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 6px;
+        transition: background 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .demo-cta:hover { background: #4cae4c; }
+
+    .demo-exit {
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.35rem 0.6rem;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.25);
+        transition: all 0.15s ease;
+        white-space: nowrap;
+    }
+
+    .demo-exit:hover {
+        color: white;
+        border-color: rgba(255,255,255,0.6);
+    }
+
+    /* Disabled nav link for demo mode */
+    .nav-link-disabled {
+        color: #aab3bb !important;
+        cursor: not-allowed;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--radius-md);
+    }
+
+    .nav-demo-tag {
+        font-size: 0.65rem;
+        font-weight: 700;
+        background: #e74c3c;
+        color: white;
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+        letter-spacing: 0.3px;
+    }
+
+    @media (max-width: 640px) {
+        .demo-banner-inner { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+        .demo-banner-right { width: 100%; }
+        .demo-cta, .demo-exit { flex: 1; text-align: center; }
+    }
+
+    /* Desktop nav user area */
+    .nav-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-email-desktop {
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.9rem;
+        font-size: 0.875rem;
+    }
+
+    /* Hide desktop user section on mobile (shown in drawer instead) */
+    @media (max-width: 768px) {
+        .nav-user { display: none !important; }
+    }
+    </style>
 </body>
 </html>
