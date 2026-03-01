@@ -1,14 +1,3 @@
-"""
-PancrePal - Diabetes Companion Web App
-Iteration 6: Final Release
-
-US-25: Insight Engine (Pattern Detection)
-US-26: Demo Mode (Examiner / Clinician View)
-US-27: Time-of-Day Analysis
-
-All previous iterations' features are retained.
-"""
-
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, \
     send_from_directory, send_file, make_response, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
